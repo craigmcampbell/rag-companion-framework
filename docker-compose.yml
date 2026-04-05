@@ -1,0 +1,60 @@
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    restart: unless-stopped
+    volumes:
+      - chroma_data:/chroma/chroma
+    ports:
+      - "127.0.0.1:8001:8000"
+  server:
+    build: ./rpg-server
+    restart: unless-stopped
+    command: uvicorn server:app --host 0.0.0.0 --port 8002
+    ports:
+      - "127.0.0.1:8002:8002" # Obsidian plugin connects here
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8001
+    depends_on:
+      - chromadb
+    volumes:
+      - ./model_cache:/root/.cache/huggingface # persist downloaded model
+  sillytavern:
+    build: ..
+    container_name: sillytavern
+    hostname: sillytavern
+    image: ghcr.io/sillytavern/sillytavern:latest
+    environment:
+      - NODE_ENV=production
+      - FORCE_COLOR=1
+      - SILLYTAVERN_HEARTBEATINTERVAL=30
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./sillytavern/config:/home/node/app/config"
+      - "./sillytavern/data:/home/node/app/data"
+      - "./sillytavern/plugins:/home/node/app/plugins"
+      - "./sillytavern/extensions:/home/node/app/public/scripts/extensions/third-party"
+    healthcheck:
+      test: ["CMD", "node", "src/healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+    restart: unless-stopped
+  watcher:
+    build: .
+    restart: unless-stopped
+    command: python watcher.py --vault /vault
+    environment:
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8001
+    depends_on:
+      - chromadb
+    volumes:
+      - ${VAULT_PATH}:/vault:ro # mount vault read-only
+      - ./model_cache:/root/.cache/huggingface # share cached model with server
+
+volumes:
+  chroma_data:

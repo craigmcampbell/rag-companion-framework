@@ -1,0 +1,68 @@
+[
+  {
+    "id": "compact_investigation",
+    "name": "The Compact Closes In",
+    "clock_type": "threat",
+    "segments": 6,
+    "filled": 2,
+    "description": "The Mage's Compact suspects someone in Vethara is doing unlicensed spell architecture. They're narrowing their search.",
+    "trigger_effect": "A Compact investigator makes direct contact with Senna or Garion",
+    "increment_conditions": [
+      "Senna uses magic in a public or semi-public space",
+      "A job goes loud and attracts official attention",
+      "The fence or another contact talks to the wrong person",
+      "Senna's research produces visible or audible effects outside the workshop"
+    ],
+    "decrement_conditions": [
+      "Garion successfully plants false leads",
+      "They acquire the Compact's informant list and act on it",
+      "A significant event draws the Compact's attention elsewhere"
+    ],
+    "visible_to_players": false,
+    "triggered": false,
+    "created_session": "2024-03-01"
+  },
+  {
+    "id": "research_progress",
+    "name": "Adaptive Framework",
+    "clock_type": "progress",
+    "segments": 8,
+    "filled": 3,
+    "description": "Senna's primary research project. A spell framework that adapts dynamically to the caster's intent rather than firing as fixed effects.",
+    "trigger_effect": "Senna achieves a working proof-of-concept — the framework functions as theorized",
+    "increment_conditions": [
+      "A required component or text is acquired",
+      "A theoretical obstacle is solved",
+      "A successful experimental casting occurs"
+    ],
+    "decrement_conditions": [
+      "Key materials are lost or destroyed",
+      "A critical assumption is proven wrong"
+    ],
+    "visible_to_players": true,
+    "triggered": false,
+    "created_session": "2024-03-01"
+  },
+  {
+    "id": "what_we_dont_say",
+    "name": "What We Don't Say",
+    "clock_type": "relationship",
+    "segments": 6,
+    "filled": 1,
+    "description": "Unresolved tension between Garion and Senna around risk, honesty, and the future. Fills from avoided conversations and deflected moments.",
+    "trigger_effect": "A quiet moment arrives where the conversation they've been not having finally happens",
+    "increment_conditions": [
+      "Garion downplays how dangerous a job was",
+      "Senna loses track of time and misses something that mattered to him",
+      "Either deflects a direct emotional question",
+      "Something almost goes very wrong and neither addresses it directly"
+    ],
+    "decrement_conditions": [
+      "A genuine honest conversation happens",
+      "One of them says something they've been not saying"
+    ],
+    "visible_to_players": false,
+    "triggered": false,
+    "created_session": "2024-03-01"
+  }
+]

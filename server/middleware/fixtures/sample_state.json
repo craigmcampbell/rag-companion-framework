@@ -1,0 +1,41 @@
+{
+  "character_state": {
+    "mood": "focused",
+    "energy": "low",
+    "research_excitement": "high",
+    "tension_with_garion": "none"
+  },
+  "research_state": {
+    "project_name": "Adaptive Spell Framework",
+    "progress": 34,
+    "current_obstacle": "stabilizing intent-to-effect translation at range",
+    "recent_breakthrough": "component resonance mapping — components match caster, not spell",
+    "materials_needed": ["resonance crystal (grade 3+)", "Aldric Notation vol. 3"]
+  },
+  "relationship_state": {
+    "trust": 87,
+    "tension": 5,
+    "history_depth": 43,
+    "last_significant_moment": "Garion came back from the Vethara job favoring his left side and said nothing about it",
+    "unspoken_things": [
+      "how close that job actually was",
+      "what happens when the research is done"
+    ]
+  },
+  "world_state": {
+    "current_location": "Vethara",
+    "active_npc_states": {
+      "aldric_fence": {
+        "trust_level": "cautious",
+        "last_interaction": "session_03",
+        "owes_garion": true,
+        "knows_about_senna": false
+      }
+    },
+    "world_events": [
+      "A Mage's Compact delegation arrived in Vethara two days ago",
+      "There have been component thefts in the scholarly quarter this week",
+      "The cartographer downstairs has a new apprentice"
+    ]
+  }
+}

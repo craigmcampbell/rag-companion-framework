@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+vars:
+  VAULT: ./vault
+
+tasks:
+  test:
+    desc: Run tests
+    cmds:
+      - python3 ./server/middleware/validate.py
+    silent: false
