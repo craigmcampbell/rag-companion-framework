@@ -1,0 +1,14 @@
+# watcher_config.yml — Vault/collection pairs for the watcher service.
+#
+# Each entry maps an Obsidian vault path to a ChromaDB collection.
+# Adding a new campaign: add a new entry here, mount the vault in
+# docker-compose.yml, and create the collection. No code changes needed.
+#
+# Paths here are the container-internal paths (as mounted in docker-compose).
+# For local dev, use absolute paths to your actual vault locations.
+
+vaults:
+  - path: /vaults/senna
+    collection: senna_memory
+  - path: /vaults/starforged
+    collection: starforged_memory

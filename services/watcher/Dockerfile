@@ -3,11 +3,12 @@ FROM python:3.11-slim
 WORKDIR /app
 
 RUN pip install --no-cache-dir \
-    fastapi \
-    uvicorn \
     chromadb \
     sentence-transformers \
-    anthropic \
-    watchdog
+    watchdog \
+    pyyaml \
+    python-dotenv
 
-COPY server/ ./
+COPY . .
+
+CMD ["python", "watcher.py"]

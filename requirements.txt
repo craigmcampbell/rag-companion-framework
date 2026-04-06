@@ -1,0 +1,10 @@
+# Local dev / IDE resolution — matches services/middleware and services/watcher dependencies
+chromadb
+fastapi
+httpx
+pydantic
+python-dotenv
+pyyaml
+sentence-transformers
+uvicorn[standard]
+watchdog

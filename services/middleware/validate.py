@@ -14,6 +14,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from tests import test_models
+from tests import test_chroma_client
 
 # (tier, name, test module)
 # Tier 1 = pure logic, no connections
@@ -22,8 +23,8 @@ from tests import test_models
 
 COMPONENTS = [
     (1, "Data Models", test_models),
+    (1, "ChromaDB Client",     test_chroma_client),
     # Future components added here in build order:
-    # (1, "ChromaDB Client",     test_chroma_client),
     # (2, "Memory Extractor",    test_memory_extractor),
     # (1, "Clock Manager",       test_clock_manager),
     # (2, "Clock Assessor",      test_clock_assessor),

@@ -2,12 +2,35 @@
 
 version: '3'
 
-vars:
-  VAULT: ./vault
-
 tasks:
   test:
-    desc: Run tests
+    desc: Run middleware validation (tier 1 by default)
     cmds:
-      - python3 ./server/middleware/validate.py
+      - 'python3 ./services/middleware/validate.py {{.CLI_ARGS}}'
+    silent: false
+
+  test:2:
+    desc: Run middleware validation tier 2 (requires Ollama)
+    cmds:
+      - python3 ./services/middleware/validate.py --tier 2
+    silent: false
+
+  test:3:
+    desc: Run middleware validation tier 3 (full stack)
+    cmds:
+      - python3 ./services/middleware/validate.py --tier 3
+    silent: false
+
+  ingest:
+    desc: 'Full re-index a vault. Usage: task ingest -- --vault /path --collection senna_memory'
+    dir: services/watcher
+    cmds:
+      - 'python3 ingest.py {{.CLI_ARGS}}'
+    silent: false
+
+  watch:
+    desc: Start the vault watcher
+    dir: services/watcher
+    cmds:
+      - python3 watcher.py
     silent: false
