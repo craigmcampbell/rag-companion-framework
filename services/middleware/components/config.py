@@ -45,7 +45,7 @@ MAX_DISTANCE = float(os.environ.get("MAX_DISTANCE", "0.5"))
 
 OLLAMA_HOST  = os.environ.get("OLLAMA_HOST", "localhost")
 OLLAMA_PORT  = int(os.environ.get("OLLAMA_PORT", "11434"))
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "mistral")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "mistral-nemo:12b")
 
 # ── OpenRouter (DeepSeek for primary RP) ──────────────────────────────────────
 

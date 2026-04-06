@@ -3,6 +3,16 @@
 version: '3'
 
 tasks:
+  activate:
+    desc: Activate the virtual environment
+    cmds:
+      - 'source .venv/bin/activate'
+    silent: false
+  install:
+    desc: Install the dependencies
+    cmds:
+      - 'pip install -r requirements.txt'
+    silent: false
   test:
     desc: Run middleware validation (tier 1 by default)
     cmds:

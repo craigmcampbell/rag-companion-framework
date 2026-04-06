@@ -39,7 +39,7 @@ services:
       - EMBEDDING_MODEL=all-mpnet-base-v2
       - OLLAMA_HOST=${OLLAMA_HOST:-host.docker.internal}
       - OLLAMA_PORT=11434
-      - OLLAMA_MODEL=mistral
+      - OLLAMA_MODEL=mistral-nemo:12b
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - OPENROUTER_MODEL=deepseek/deepseek-chat
       - MIDDLEWARE_PORT=8200
