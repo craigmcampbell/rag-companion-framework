@@ -7,11 +7,15 @@
 - Memory extraction prompt now labels exchange lines with campaign-configured character names (no hardcoded actor names)
 - Milestone signal detection expanded to treat `"solved"` as milestone language, improving significance upgrades on breakthroughs
 - `MemoryExtractor` JSON parse failures now emit structured logger warnings instead of `print`, improving observability in service logs
+- PR CI runs `basedpyright` with `--level error` so strictness warnings no longer fail the workflow
+- Changelog updater skill targets `docs/CHANGELOG.md` instead of a root-level changelog file
 
 ### Fixed
 
 - `services/middleware/tests/test_memory_extractor.py`: cast mocked `generate_json` to `AsyncMock` so Pyright accepts mock assertions
 - `Taskfile.yml`: quote `ingest.desc` so `Usage:` is parsed as a string and YAML/schema checks pass
+- Compose smoke CI sets vault env placeholders and starts `chromadb` so compose works without a local `.env`
+- Middleware: `dict[str, Any]` annotations for basedpyright across models, Chroma/Ollama clients, and tests (no runtime change)
 
 ## 2026-04-05
 

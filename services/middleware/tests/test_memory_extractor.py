@@ -14,7 +14,7 @@ import sys
 import os
 import json
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 from unittest.mock import AsyncMock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -62,7 +62,7 @@ def make_test_campaign() -> CampaignContext:
     )
 
 
-def make_mock_ollama(json_response: dict) -> OllamaClient:
+def make_mock_ollama(json_response: dict[str, Any]) -> OllamaClient:
     mock = AsyncMock(spec=OllamaClient)
     mock.generate_json = AsyncMock(return_value=json_response)
     return mock
@@ -319,7 +319,7 @@ async def run_live_inference():
         campaign = CampaignContext.from_yaml(CAMPAIGN_DIR / "senna.yml")
         extractor = MemoryExtractor(client, campaign)
 
-        async def check_job_return() -> dict:
+        async def check_job_return() -> dict[str, Any]:
             ex = load_exchange("job_return.json")
             result = await extractor.extract(ex)
             return {
@@ -331,7 +331,7 @@ async def run_live_inference():
                 "notes": f"events={result.events if result else None}",
             }
 
-        async def check_domestic_filtered() -> dict:
+        async def check_domestic_filtered() -> dict[str, Any]:
             ex = load_exchange("domestic_quiet.json")
             result = await extractor.extract(ex)
             return {
@@ -339,7 +339,7 @@ async def run_live_inference():
                 "notes": f"result={'None (correct)' if result is None else 'not None (wrong)'}",
             }
 
-        async def check_breakthrough_significance() -> dict:
+        async def check_breakthrough_significance() -> dict[str, Any]:
             ex = load_exchange("research_breakthrough.json")
             result = await extractor.extract(ex)
             passed = (

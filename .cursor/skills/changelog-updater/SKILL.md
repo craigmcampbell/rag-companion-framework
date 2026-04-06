@@ -1,14 +1,14 @@
 ---
 name: changelog-updater
-description: Append a changelog entry to CHANGELOG.md using the current date or an explicit version
+description: Append a changelog entry to docs/CHANGELOG.md using the current date or an explicit version
 ---
 
 # Changelog Updater
 
-When updating `CHANGELOG.md`, follow these rules:
+When updating the changelog, follow these rules:
 
 ## File target
-- Target file: `CHANGELOG.md`
+- Target file: `docs/CHANGELOG.md` (under the repo’s `docs/` folder, not the repository root)
 
 ## Placement
 - By default, append under `## YYYY-MM-DD` using the current date
@@ -42,7 +42,7 @@ Use these when helpful:
 ## Workflow
 1. Inspect changed files and diffs (not filenames only)
 2. For each change, write a one-line impact note ("what changed for users/operators")
-3. Read existing `CHANGELOG.md`
+3. Read existing `docs/CHANGELOG.md`
 4. Choose the target heading based on date or version
 5. Create the heading if needed
 6. Add concise entries under the appropriate section

@@ -8,7 +8,7 @@ it changes in one place.
 from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 import json
 from datetime import datetime
 
@@ -65,11 +65,11 @@ class Message:
     role: str           # "user" or "assistant"
     content: str
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {"role": self.role, "content": self.content}
 
     @classmethod
-    def from_dict(cls, d: dict) -> Message:
+    def from_dict(cls, d: dict[str, Any]) -> Message:
         return cls(role=d["role"], content=d["content"])
 
 
@@ -84,7 +84,7 @@ class Exchange:
     session_date: str = field(default_factory=lambda: datetime.now().strftime("%Y-%m-%d"))
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "user": self.user,
             "assistant": self.assistant,
@@ -93,7 +93,7 @@ class Exchange:
         }
 
     @classmethod
-    def from_dict(cls, d: dict) -> Exchange:
+    def from_dict(cls, d: dict[str, Any]) -> Exchange:
         return cls(
             user=d["user"],
             assistant=d["assistant"],
@@ -134,7 +134,7 @@ class ExtractedMemory:
             lines.append(f'\n> "{self.notable_quote}"\n')
         return lines
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "events": self.events,
             "revelations": self.revelations,
@@ -144,7 +144,7 @@ class ExtractedMemory:
         }
 
     @classmethod
-    def from_dict(cls, d: dict) -> ExtractedMemory:
+    def from_dict(cls, d: dict[str, Any]) -> ExtractedMemory:
         return cls(
             events=d.get("events", []),
             revelations=d.get("revelations", []),
@@ -163,7 +163,7 @@ class RetrievedMemory:
     distance: float      # Semantic distance — lower is more relevant
     session_date: Optional[str] = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "content": self.content,
             "source": self.source,
@@ -216,7 +216,7 @@ class Clock:
         if not self.is_full:
             self.triggered = False
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -233,7 +233,7 @@ class Clock:
         }
 
     @classmethod
-    def from_dict(cls, d: dict) -> Clock:
+    def from_dict(cls, d: dict[str, Any]) -> Clock:
         return cls(
             id=d["id"],
             name=d["name"],
@@ -253,15 +253,15 @@ class Clock:
 @dataclass
 class ClockAssessment:
     """Structured output from the clock assessor."""
-    increments: list[dict] = field(default_factory=list)   # [{"id": ..., "reason": ...}]
-    decrements: list[dict] = field(default_factory=list)
-    triggered: list[dict] = field(default_factory=list)    # [{"id": ..., "effect": ..., "surface": ...}]
+    increments: list[dict[str, Any]] = field(default_factory=list)   # [{"id": ..., "reason": ...}]
+    decrements: list[dict[str, Any]] = field(default_factory=list)
+    triggered: list[dict[str, Any]] = field(default_factory=list)    # [{"id": ..., "effect": ..., "surface": ...}]
     surface_now: bool = False
 
     def has_changes(self) -> bool:
         return bool(self.increments or self.decrements or self.triggered)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "increments": self.increments,
             "decrements": self.decrements,
@@ -270,7 +270,7 @@ class ClockAssessment:
         }
 
     @classmethod
-    def from_dict(cls, d: dict) -> ClockAssessment:
+    def from_dict(cls, d: dict[str, Any]) -> ClockAssessment:
         return cls(
             increments=d.get("increments", []),
             decrements=d.get("decrements", []),
@@ -294,7 +294,7 @@ class CharacterState:
     research_excitement: str = "normal"   # low / normal / high
     tension_with_garion: str = "none"     # none / mild / moderate / high
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "mood": self.mood.value,
             "energy": self.energy.value,
@@ -314,7 +314,7 @@ class CharacterState:
         return "\n".join(lines)
 
     @classmethod
-    def from_dict(cls, d: dict) -> CharacterState:
+    def from_dict(cls, d: dict[str, Any]) -> CharacterState:
         return cls(
             mood=Mood(d.get("mood", "focused")),
             energy=EnergyLevel(d.get("energy", "normal")),
@@ -332,7 +332,7 @@ class ResearchState:
     recent_breakthrough: Optional[str] = None
     materials_needed: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "project_name": self.project_name,
             "progress": self.progress,
@@ -352,7 +352,7 @@ class ResearchState:
         return "\n".join(lines)
 
     @classmethod
-    def from_dict(cls, d: dict) -> ResearchState:
+    def from_dict(cls, d: dict[str, Any]) -> ResearchState:
         return cls(
             project_name=d.get("project_name", "Adaptive Spell Framework"),
             progress=d.get("progress", 0),
@@ -371,7 +371,7 @@ class RelationshipState:
     last_significant_moment: Optional[str] = None
     unspoken_things: list[str] = field(default_factory=list)  # feeds relationship clock
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "trust": self.trust,
             "tension": self.tension,
@@ -381,7 +381,7 @@ class RelationshipState:
         }
 
     @classmethod
-    def from_dict(cls, d: dict) -> RelationshipState:
+    def from_dict(cls, d: dict[str, Any]) -> RelationshipState:
         return cls(
             trust=d.get("trust", 80),
             tension=d.get("tension", 0),
@@ -395,10 +395,10 @@ class RelationshipState:
 class WorldState:
     """Current state of the world and active NPCs."""
     current_location: str = "Vethara"
-    active_npc_states: dict[str, dict] = field(default_factory=dict)
+    active_npc_states: dict[str, dict[str, Any]] = field(default_factory=dict)
     world_events: list[str] = field(default_factory=list)  # ambient events queue
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "current_location": self.current_location,
             "active_npc_states": self.active_npc_states,
@@ -406,7 +406,7 @@ class WorldState:
         }
 
     @classmethod
-    def from_dict(cls, d: dict) -> WorldState:
+    def from_dict(cls, d: dict[str, Any]) -> WorldState:
         return cls(
             current_location=d.get("current_location", "Vethara"),
             active_npc_states=d.get("active_npc_states", {}),
@@ -440,7 +440,7 @@ class InjectionContext:
             self.session_tone,
         ])
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "retrieved_memories": [m.to_dict() for m in self.retrieved_memories],
             "character_state": self.character_state.to_dict() if self.character_state else None,
@@ -463,7 +463,7 @@ class EvaluationResult:
     notes: str = ""
     score: Optional[str] = None   # e.g. "2/3" for multi-run checks
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "passed": self.passed,
             "criteria_results": self.criteria_results,
@@ -472,7 +472,7 @@ class EvaluationResult:
         }
 
     @classmethod
-    def from_dict(cls, d: dict) -> EvaluationResult:
+    def from_dict(cls, d: dict[str, Any]) -> EvaluationResult:
         return cls(
             passed=d["passed"],
             criteria_results=d.get("criteria_results", {}),

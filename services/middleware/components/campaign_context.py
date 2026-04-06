@@ -16,8 +16,9 @@ Loading:
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 import yaml
 
 
@@ -91,7 +92,7 @@ class CampaignContext:
             extra_context=data.get("extra_context", ""),
         )
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "campaign_id": self.campaign_id,
             "campaign_name": self.campaign_name,

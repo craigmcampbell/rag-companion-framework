@@ -72,7 +72,7 @@ class ChromaClient:
         query_text: str,
         n_results: int = TOP_K,
         max_distance: float = MAX_DISTANCE,
-        where: Optional[dict] = None,
+        where: Optional[dict[str, Any]] = None,
     ) -> list[RetrievedMemory]:
         """
         Query the collection by semantic similarity.
@@ -179,7 +179,7 @@ class ChromaClient:
         self,
         doc_id: str,
         content: str,
-        metadata: dict,
+        metadata: dict[str, Any],
     ) -> None:
         """
         Store a single memory chunk.
@@ -206,7 +206,7 @@ class ChromaClient:
         except Exception as e:
             raise ChromaStoreError(f"Store failed for {doc_id}: {e}") from e
 
-    def store_batch(self, items: list[dict]) -> None:
+    def store_batch(self, items: list[dict[str, Any]]) -> None:
         """
         Store multiple chunks in a single upsert call.
 
