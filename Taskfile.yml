@@ -28,6 +28,12 @@ tasks:
       - python3 ingest.py {{.CLI_ARGS}}
     silent: false
 
+  install:
+    desc: Install the dependencies
+    cmds:
+      - pip3 install -r requirements.txt
+    silent: false
+
   watch:
     desc: Start the vault watcher
     dir: services/watcher

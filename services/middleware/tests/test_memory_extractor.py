@@ -315,65 +315,68 @@ async def run_live_inference():
     Runs each check 3 times, requires 2/3 passes.
     """
     client = OllamaClient()
-    campaign = CampaignContext.from_yaml(CAMPAIGN_DIR / "senna.yml")
-    extractor = MemoryExtractor(client, campaign)
+    try:
+        campaign = CampaignContext.from_yaml(CAMPAIGN_DIR / "senna.yml")
+        extractor = MemoryExtractor(client, campaign)
 
-    async def check_job_return() -> dict:
-        ex = load_exchange("job_return.json")
-        result = await extractor.extract(ex)
-        return {
-            "overall_pass": (
+        async def check_job_return() -> dict:
+            ex = load_exchange("job_return.json")
+            result = await extractor.extract(ex)
+            return {
+                "overall_pass": (
+                    result is not None
+                    and not result.is_empty()
+                    and len(result.events) > 0
+                ),
+                "notes": f"events={result.events if result else None}",
+            }
+
+        async def check_domestic_filtered() -> dict:
+            ex = load_exchange("domestic_quiet.json")
+            result = await extractor.extract(ex)
+            return {
+                "overall_pass": result is None,
+                "notes": f"result={'None (correct)' if result is None else 'not None (wrong)'}",
+            }
+
+        async def check_breakthrough_significance() -> dict:
+            ex = load_exchange("research_breakthrough.json")
+            result = await extractor.extract(ex)
+            passed = (
                 result is not None
                 and not result.is_empty()
-                and len(result.events) > 0
-            ),
-            "notes": f"events={result.events if result else None}",
-        }
+                and result.significance in (MemorySignificance.HIGH, MemorySignificance.MILESTONE)
+            )
+            return {
+                "overall_pass": passed,
+                "notes": f"significance={result.significance if result else None}",
+            }
 
-    async def check_domestic_filtered() -> dict:
-        ex = load_exchange("domestic_quiet.json")
-        result = await extractor.extract(ex)
-        return {
-            "overall_pass": result is None,
-            "notes": f"result={'None (correct)' if result is None else 'not None (wrong)'}",
-        }
+        checks = [
+            ("Job return extracts events",            check_job_return),
+            ("Domestic quiet filtered pre-inference", check_domestic_filtered),
+            ("Breakthrough classified high+",         check_breakthrough_significance),
+        ]
 
-    async def check_breakthrough_significance() -> dict:
-        ex = load_exchange("research_breakthrough.json")
-        result = await extractor.extract(ex)
-        passed = (
-            result is not None
-            and not result.is_empty()
-            and result.significance in (MemorySignificance.HIGH, MemorySignificance.MILESTONE)
-        )
-        return {
-            "overall_pass": passed,
-            "notes": f"significance={result.significance if result else None}",
-        }
+        failures = []
+        for check_name, check_fn in checks:
+            results = []
+            for _ in range(3):
+                r = await check_fn()
+                results.append(r)
 
-    checks = [
-        ("Job return extracts events",            check_job_return),
-        ("Domestic quiet filtered pre-inference", check_domestic_filtered),
-        ("Breakthrough classified high+",         check_breakthrough_significance),
-    ]
+            passed = sum(1 for r in results if r["overall_pass"])
+            if passed < 2:
+                notes = [r["notes"] for r in results]
+                failures.append(f"{check_name} ({passed}/3): {notes}")
 
-    failures = []
-    for check_name, check_fn in checks:
-        results = []
-        for _ in range(3):
-            r = await check_fn()
-            results.append(r)
-
-        passed = sum(1 for r in results if r["overall_pass"])
-        if passed < 2:
-            notes = [r["notes"] for r in results]
-            failures.append(f"{check_name} ({passed}/3): {notes}")
-
-    if failures:
-        raise AssertionError(
-            "Tier 2 inference checks failed:\n" +
-            "\n".join(f"  - {f}" for f in failures)
-        )
+        if failures:
+            raise AssertionError(
+                "Tier 2 inference checks failed:\n" +
+                "\n".join(f"  - {f}" for f in failures)
+            )
+    finally:
+        await client.close()
 
 
 # ── Test runner ───────────────────────────────────────────────────────────────

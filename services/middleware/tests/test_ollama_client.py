@@ -276,18 +276,18 @@ async def run_live_inference():
     Tests that the model returns valid JSON for extraction-style prompts.
     """
     client = OllamaClient()
+    try:
+        # Verify connectivity first
+        reachable = await client.heartbeat()
+        if not reachable:
+            raise AssertionError(
+                "Ollama not reachable or mistral-nemo:12b not available. "
+                "Run: ollama pull mistral-nemo:12b"
+            )
 
-    # Verify connectivity first
-    reachable = await client.heartbeat()
-    if not reachable:
-        raise AssertionError(
-            "Ollama not reachable or mistral-nemo:12b not available. "
-            "Run: ollama pull mistral-nemo:12b"
-        )
-
-    # Test 1: Basic JSON generation
-    result = await client.generate_json(
-        prompt="""Extract memory from this exchange. Return JSON only, no other text.
+        # Test 1: Basic JSON generation
+        result = await client.generate_json(
+            prompt="""Extract memory from this exchange. Return JSON only, no other text.
 
 User: The contact wanted double. I paid what you gave me and walked.
 Assistant: Senna looked up. "He was testing you. You did right."
@@ -298,16 +298,16 @@ Return this exact structure:
   "revelations": ["list of things learned"],
   "state_changes": ["list of how things shifted"],
   "notable_quote": "one memorable line or null"
-}"""
-    )
+}""",
+        )
 
-    assert isinstance(result, dict), "Response should be a dict"
-    assert "events" in result, "Response should have events key"
-    assert isinstance(result["events"], list), "events should be a list"
+        assert isinstance(result, dict), "Response should be a dict"
+        assert "events" in result, "Response should have events key"
+        assert isinstance(result["events"], list), "events should be a list"
 
-    # Test 2: Model correctly identifies a low-signal exchange
-    result2 = await client.generate_json(
-        prompt="""Is this exchange worth remembering long-term?
+        # Test 2: Model correctly identifies a low-signal exchange
+        result2 = await client.generate_json(
+            prompt="""Is this exchange worth remembering long-term?
         
 User: Do you want tea?
 Assistant: Please. Thank you.
@@ -316,14 +316,14 @@ Return JSON only:
 {
   "worth_remembering": true or false,
   "reason": "brief explanation"
-}"""
-    )
+}""",
+        )
 
-    assert "worth_remembering" in result2, "Response should have worth_remembering key"
-    assert result2["worth_remembering"] is False, \
-        "Tea exchange should not be marked as worth remembering"
-
-    await client.close()
+        assert "worth_remembering" in result2, "Response should have worth_remembering key"
+        assert result2["worth_remembering"] is False, \
+            "Tea exchange should not be marked as worth remembering"
+    finally:
+        await client.close()
 
 
 # ── Test runner ───────────────────────────────────────────────────────────────

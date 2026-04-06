@@ -76,13 +76,15 @@ _SYSTEM_PROMPT = """You are a memory extraction system for an ongoing roleplay s
 Your role is to identify what is worth remembering from a conversation exchange.
 You return only valid JSON with no explanation, preamble, or markdown formatting."""
 
-_EXTRACTION_PROMPT = """Extract long-term memories from this roleplay exchange.
+def _build_extraction_prompt(campaign: CampaignContext, exchange: Exchange) -> str:
+    # f-string: exchange lines may contain `{`/`}` (JSON, code); str.format mis-parses those.
+    return f"""Extract long-term memories from this roleplay exchange.
 
-{campaign_preamble}
+{campaign.prompt_preamble}
 
 Exchange:
-User ({user_name}): {user}
-Assistant ({companion_name}): {assistant}
+User ({campaign.user_character.name}): {exchange.user}
+Assistant ({campaign.companion_character.name}): {exchange.assistant}
 
 Extract only what is genuinely worth remembering long-term. Skip routine conversation.
 
@@ -135,13 +137,7 @@ class MemoryExtractor:
         if not is_memorable(exchange):
             return None
 
-        prompt = _EXTRACTION_PROMPT.format(
-            campaign_preamble=self.campaign.prompt_preamble,
-            user_name=self.campaign.user_character.name,
-            companion_name=self.campaign.companion_character.name,
-            user=exchange.user,
-            assistant=exchange.assistant,
-        )
+        prompt = _build_extraction_prompt(self.campaign, exchange)
 
         try:
             raw = await self.ollama.generate_json(

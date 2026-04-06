@@ -1,0 +1,36 @@
+name: Compose Smoke
+
+on:
+  pull_request:
+    paths:
+      - "docker-compose.yml"
+      - "services/**"
+      - "requirements.txt"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker compose config check
+        run: docker compose config
+
+      - name: Boot core services
+        run: |
+          docker compose up -d chroma
+          sleep 8
+          docker compose ps
+
+      - name: Chroma health check
+        run: |
+          curl --fail http://127.0.0.1:8100/api/v2/heartbeat
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

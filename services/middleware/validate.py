@@ -71,12 +71,15 @@ async def main():
             passed += 1
         except AssertionError as e:
             print(f"  ✗ {name}")
-            for line in repr(e).splitlines():
+            print(f"    {type(e).__name__}")
+            for line in str(e).splitlines():
                 print(f"    {line}")
             failed += 1
         except Exception as e:
             print(f"  ✗ {name} (unexpected error)")
-            print(f"    {type(e).__name__}: {repr(e)}")
+            print(f"    {type(e).__name__}")
+            for line in str(e).splitlines():
+                print(f"    {line}")
             failed += 1
 
     print(f"\n{passed} passed  {failed} failed  {skipped} skipped")
