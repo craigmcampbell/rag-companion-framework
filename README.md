@@ -24,7 +24,8 @@ Design intent is **one shared Chroma + middleware**, with **separate ST instance
 - **Shared data models** (`components/models.py`): exchanges, memories, clocks, state types used by upcoming pipeline code.
 - **`ChromaClient`**: query/store helpers over a collection (distance filter, significance, milestones, batch upsert).
 - **`OllamaClient`**: async HTTP to Ollama (`/api/generate`), JSON extraction with retry, heartbeat against `/api/tags`.
-- **`validate.py`**: tiered test runner — **Tier 1** (models, Chroma client mocks, Ollama client mocks), **Tier 2** (live Ollama), **Tier 3** reserved for full stack. Run via `task test`, `task test:2`, or `python services/middleware/validate.py`.
+- **`MemoryExtractor`**: campaign-aware extraction logic with a memorability pre-filter, milestone phrase boosting (including `"solved"`), and structured logging on JSON parse failures.
+- **`validate.py`**: tiered test runner — **Tier 1** (models, Chroma client mocks, Ollama client mocks, memory extractor unit tests), **Tier 2** (live Ollama), **Tier 3** full stack. Run via `task test` (tier 2), `task test:1`, `task test:3`, or `python services/middleware/validate.py --tier N`.
 
 Compose also declares a **`middleware` service** (port **8200**, env for Chroma, Ollama, OpenRouter). The repo currently holds **components and tests** under `services/middleware`, not a finished long-running HTTP app; add a Dockerfile + entrypoint here when the router/API exists.
 
@@ -32,7 +33,7 @@ Compose also declares a **`middleware` service** (port **8200**, env for Chroma,
 
 ## Not built yet (see [TODO](./docs/TODO.md))
 
-Higher-level pipeline pieces (memory extractor, clock manager/assessor, state manager, OpenRouter client, injector, write-back, HTTP router) are **not** implemented end-to-end yet; the table in `docs/TODO.md` tracks status.
+Higher-level pipeline pieces (clock manager/assessor, state manager, OpenRouter client, injector, write-back, HTTP router) are **not** implemented end-to-end yet; the table in `docs/TODO.md` tracks status.
 
 ---
 

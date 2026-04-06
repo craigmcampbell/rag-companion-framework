@@ -267,7 +267,9 @@ def test_evaluation_result_roundtrip():
 # Test runner
 # ---------------------------------------------------------------------------
 
-async def run():
+async def run(tier: int = 1):
+    # tier parameter accepted for interface consistency with other test modules.
+    # test_models has no tier 2/3 checks — all tests are pure logic.
     tests = [
         test_message_roundtrip,
         test_exchange_roundtrip,

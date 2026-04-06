@@ -5,6 +5,9 @@ Usage:
   python validate.py           # Tier 1 only (no connections required)
   python validate.py --tier 2  # Tier 1 + 2 (requires Ollama running)
   python validate.py --tier 3  # Full stack (requires all connections)
+
+During active development, always run --tier 2.
+Tier 1 alone skips inference components and gives a false sense of safety.
 """
 
 import asyncio
@@ -16,6 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from tests import test_models
 from tests import test_chroma_client
 from tests import test_ollama_client
+from tests import test_memory_extractor
 
 # (tier, name, test module)
 # Tier 1 = pure logic, no connections
@@ -23,11 +27,11 @@ from tests import test_ollama_client
 # Tier 3 = requires full stack (OpenRouter, ChromaDB, Obsidian)
 
 COMPONENTS = [
-    (1, "Data Models",    test_models),
-    (1, "ChromaDB Client", test_chroma_client),
-    (2, "Ollama Client",   test_ollama_client),
+    (1, "Data Models",      test_models),
+    (1, "ChromaDB Client",  test_chroma_client),
+    (2, "Ollama Client",    test_ollama_client),
+    (2, "Memory Extractor", test_memory_extractor),
     # Future components added here in build order:
-    # (2, "Memory Extractor",    test_memory_extractor),
     # (1, "Clock Manager",       test_clock_manager),
     # (2, "Clock Assessor",      test_clock_assessor),
     # (1, "State Manager",       test_state_manager),
@@ -47,30 +51,32 @@ async def main():
             sys.exit(1)
 
     tier_labels = {1: "pure logic", 2: "+ inference", 3: "+ full stack"}
-    print(f"=== Senna Middleware Validation (tier {max_tier}: {tier_labels.get(max_tier)}) ===\n")
+    print(f"=== Middleware Validation (tier {max_tier}: {tier_labels.get(max_tier)}) ===\n")
 
     passed = 0
     failed = 0
     skipped = 0
+    skipped_tiers = set()
 
     for tier, name, module in COMPONENTS:
         if tier > max_tier:
             print(f"  - {name} (skipped — requires tier {tier})")
             skipped += 1
+            skipped_tiers.add(tier)
             continue
 
         try:
-            await module.run()
+            await module.run(tier=max_tier)
             print(f"  ✓ {name}")
             passed += 1
         except AssertionError as e:
             print(f"  ✗ {name}")
-            for line in str(e).splitlines():
+            for line in repr(e).splitlines():
                 print(f"    {line}")
             failed += 1
         except Exception as e:
             print(f"  ✗ {name} (unexpected error)")
-            print(f"    {type(e).__name__}: {e}")
+            print(f"    {type(e).__name__}: {repr(e)}")
             failed += 1
 
     print(f"\n{passed} passed  {failed} failed  {skipped} skipped")
@@ -78,6 +84,11 @@ async def main():
     if failed:
         print("\nFix failures before building the next component.")
         sys.exit(1)
+
+    if skipped_tiers:
+        missing = sorted(skipped_tiers)
+        tier_flags = "  ".join(f"--tier {t}" for t in missing)
+        print(f"\n⚠️  Components skipped. Run with {tier_flags} for full validation.")
     else:
         print("\nAll clear. Safe to proceed.")
 

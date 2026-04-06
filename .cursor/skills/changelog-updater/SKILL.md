@@ -23,6 +23,15 @@ Use these when helpful:
 - Fixed
 - Removed
 
+### Classification rules (required)
+- Classify each change before writing bullets:
+  - Added: introduces a new capability, endpoint, task, or workflow
+  - Changed: modifies runtime behavior, output, prompts, logging semantics, or defaults
+  - Fixed: resolves incorrect behavior, crash, or type/lint/schema/runtime error
+  - Removed: removes capability or behavior
+- If any runtime behavior changed, include at least one `Added` or `Changed` bullet.
+- Do not log only tooling/type/schema fixes when behavior changes are present.
+
 ## Writing style
 - One bullet per meaningful change
 - Focus on impact, not internal implementation
@@ -31,9 +40,14 @@ Use these when helpful:
 - Preserve markdown formatting
 
 ## Workflow
-1. Inspect changed files
-2. Read existing `CHANGELOG.md`
-3. Choose the target heading based on date or version
-4. Create the heading if needed
-5. Add concise entries under the appropriate section
-6. Preserve existing house style
+1. Inspect changed files and diffs (not filenames only)
+2. For each change, write a one-line impact note ("what changed for users/operators")
+3. Read existing `CHANGELOG.md`
+4. Choose the target heading based on date or version
+5. Create the heading if needed
+6. Add concise entries under the appropriate section
+7. Preserve existing house style
+8. Final checks:
+   - no duplicate date/version headings
+   - no duplicate bullets
+   - behavior changes represented in `Added`/`Changed` (not only `Fixed`)
