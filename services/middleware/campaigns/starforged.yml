@@ -1,0 +1,19 @@
+campaign_id: starforged_memory
+campaign_name: "Le Méridien Sombre"
+genre: sci-fi
+
+user_character:
+  name: Brennan
+  role: "spacer and operative, callsign Raven"
+  description: "A capable, weathered spacer navigating the Forge. Carries the loss of his partner Sable."
+
+companion_character:
+  name: Sable
+  role: "Brennan's deceased partner, present in memory and legacy"
+  description: "Sable Vah — brilliant, sharp, the counterbalance to Brennan's instincts. French was their private language. Her loss defines the prequel arc."
+
+relationship: "Partners in every sense before Sable's death. The campaign explores their history and what Brennan carries forward."
+
+setting: "The Forge — a region of space beyond the Milky Way, dangerous and largely uncharted. Ironsworn: Starforged setting."
+
+extra_context: "French appears occasionally as an intimate private language between Brennan and Sable in memory scenes."

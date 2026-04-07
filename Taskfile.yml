@@ -3,39 +3,35 @@
 version: '3'
 
 tasks:
-  activate:
-    desc: Activate the virtual environment
-    cmds:
-      - 'source .venv/bin/activate'
-    silent: false
-  install:
-    desc: Install the dependencies
-    cmds:
-      - 'pip install -r requirements.txt'
-    silent: false
   test:
-    desc: Run middleware validation (tier 1 by default)
-    cmds:
-      - 'python3 ./services/middleware/validate.py {{.CLI_ARGS}}'
-    silent: false
-
-  test:2:
-    desc: Run middleware validation tier 2 (requires Ollama)
+    desc: Run middleware validation (tier 2 — requires Ollama)
     cmds:
       - python3 ./services/middleware/validate.py --tier 2
     silent: false
 
+  test:1:
+    desc: Run tier 1 only (pure logic, no connections)
+    cmds:
+      - python3 ./services/middleware/validate.py --tier 1
+    silent: false
+
   test:3:
-    desc: Run middleware validation tier 3 (full stack)
+    desc: Run full stack validation (tier 3 — requires all connections)
     cmds:
       - python3 ./services/middleware/validate.py --tier 3
     silent: false
 
   ingest:
-    desc: 'Full re-index a vault. Usage: task ingest -- --vault /path --collection senna_memory'
+    desc: "Full re-index a vault. Usage: task ingest -- --vault /path --collection senna_memory"
     dir: services/watcher
     cmds:
-      - 'python3 ingest.py {{.CLI_ARGS}}'
+      - python3 ingest.py {{.CLI_ARGS}}
+    silent: false
+
+  install:
+    desc: Install the dependencies
+    cmds:
+      - pip3 install -r requirements.txt
     silent: false
 
   watch:

@@ -14,6 +14,7 @@ Note: There is no tier 2 here — the ChromaDB client has no AI inference.
 import sys
 import os
 import hashlib
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -27,8 +28,8 @@ from components.models import RetrievedMemory, MemorySignificance
 def make_chroma_result(
     documents: list[str],
     distances: list[float],
-    metadatas: list[dict] | None = None,
-) -> dict:
+    metadatas: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     """Build a mock ChromaDB query result in the expected shape."""
     if metadatas is None:
         metadatas = [{"source": f"Sessions/test_{i}.md"} for i in range(len(documents))]
@@ -39,7 +40,7 @@ def make_chroma_result(
     }
 
 
-def make_mock_client(query_result: dict | None = None) -> ChromaClient:
+def make_mock_client(query_result: dict[str, Any] | None = None) -> ChromaClient:
     """Return a ChromaClient with a fully mocked ChromaDB collection."""
     client = ChromaClient(collection_name="test_collection")
     mock_collection = MagicMock()

@@ -1,0 +1,32 @@
+name: Docs Guard
+
+on:
+  pull_request:
+
+jobs:
+  changelog-required:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce changelog update for code changes
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.sha }}"
+          changed="$(git diff --name-only "$base" "$head")"
+
+          code_changed="$(echo "$changed" | grep -E '^(services/|Taskfile.yml|docker-compose.yml|requirements.txt)' || true)"
+          changelog_changed="$(echo "$changed" | grep -E '^docs/CHANGELOG.md$' || true)"
+
+          if [[ -n "$code_changed" && -z "$changelog_changed" ]]; then
+            echo "Code changed but docs/CHANGELOG.md was not updated."
+            exit 1
+          fi
+
+          echo "Docs guard passed."

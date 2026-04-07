@@ -1,0 +1,47 @@
+name: CI (PR Fast)
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  middleware-fast:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt
+          .venv/bin/pip install basedpyright pyyaml
+
+      - name: Typecheck middleware
+        run: |
+          # basedpyright defaults to failOnWarnings=true; pyrightconfig.json sets failOnWarnings false
+          # so CI passes on errors-only. --level error keeps the log short (see DetachHead/basedpyright#1481).
+          .venv/bin/python -m basedpyright --level error services/middleware
+
+      - name: Run tier 1 validation
+        run: |
+          .venv/bin/python services/middleware/validate.py --tier 1
+
+      - name: Validate Taskfile YAML parses
+        run: |
+          .venv/bin/python - <<'PY'
+          import pathlib
+          import yaml
+
+          taskfile = pathlib.Path("Taskfile.yml")
+          yaml.safe_load(taskfile.read_text())
+          print("Taskfile.yml OK")
+          PY

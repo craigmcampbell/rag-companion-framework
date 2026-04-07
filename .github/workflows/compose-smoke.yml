@@ -1,0 +1,42 @@
+name: Compose Smoke
+
+on:
+  pull_request:
+    paths:
+      - "docker-compose.yml"
+      - "services/**"
+      - "requirements.txt"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      # docker-compose.yml interpolates these for all services during `compose config`;
+      # CI has no .env — use throwaway paths (only chromadb is started for smoke).
+      SENNA_VAULT_PATH: /tmp/rpg-compose-smoke/senna
+      STARFORGED_VAULT_PATH: /tmp/rpg-compose-smoke/starforged
+      OPENROUTER_API_KEY: ""
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker compose config check
+        run: docker compose config
+
+      - name: Boot core services
+        run: |
+          docker compose up -d chromadb
+          sleep 8
+          docker compose ps
+
+      - name: Chroma health check
+        run: |
+          curl --fail http://127.0.0.1:8100/api/v2/heartbeat
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v

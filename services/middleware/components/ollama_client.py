@@ -122,7 +122,7 @@ class OllamaClient:
         prompt: str,
         system: Optional[str] = None,
         model: Optional[str] = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         Send a prompt and parse the response as JSON.
 
@@ -194,7 +194,7 @@ class OllamaClient:
 
 # ── JSON parsing helper ───────────────────────────────────────────────────────
 
-def _parse_json_response(raw: str) -> dict:
+def _parse_json_response(raw: str) -> dict[str, Any]:
     """
     Attempt to extract and parse JSON from a model response.
 

@@ -5,8 +5,8 @@
 | 🟢     | 1. Data Models          | ← shared types everything else depends on   |
 | 🟢      | 2. ChromaDB Client      | ← retrieval, isolated                       |
 | 🟢      | 3. Ollama Client        | ← local inference, isolated                 |
-| 🔵      | 4. Memory Extractor     | ← uses Ollama, testable with fixtures       |
-| ○      | 5. Clock Manager        | ← pure logic, no AI dependency              |
+| 🟢      | 4. Memory Extractor     | ← uses Ollama, testable with fixtures       |
+| 🔵      | 5. Clock Manager        | ← pure logic, no AI dependency              |
 | ○      | 6. Clock Assessor       | ← uses Ollama, testable with fixtures       |
 | ○      | 7. State Manager        | ← emotional/relationship state, pure logic  |
 | ○      | 8. OpenRouter Client    | ← forward/receive, isolated                 |
