@@ -20,17 +20,16 @@ jobs:
 
       - name: Install deps
         run: |
-          python -m pip install --upgrade pip
           python -m venv .venv
+          .venv/bin/pip install --upgrade pip
           .venv/bin/pip install -r requirements.txt
           .venv/bin/pip install basedpyright pyyaml
 
       - name: Typecheck middleware
         run: |
-          # Error-level only: basedpyright treats warnings as nonzero exit by default;
-          # middleware still has many strictness warnings (reportAny, etc.).
-          # pyrightconfig.json expects .venv at repo root — create it above, run via that interpreter.
-          .venv/bin/python -m basedpyright services/middleware --level error
+          # basedpyright defaults to failOnWarnings=true; pyrightconfig.json sets failOnWarnings false
+          # so CI passes on errors-only. --level error keeps the log short (see DetachHead/basedpyright#1481).
+          .venv/bin/python -m basedpyright --level error services/middleware
 
       - name: Run tier 1 validation
         run: |
