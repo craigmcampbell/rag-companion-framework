@@ -7,6 +7,7 @@ a new collection, a new vault mount, and a new ST instance. Nothing else.
 """
 
 import os
+from urllib.parse import quote_plus
 
 # ── ChromaDB ──────────────────────────────────────────────────────────────────
 
@@ -57,15 +58,19 @@ POSTGRES_DB       = os.environ.get("POSTGRES_DB", "rpg_companion")
 
 def get_postgres_dsn() -> str:
     """Return a SQLAlchemy-compatible DSN for Postgres."""
+    user = quote_plus(POSTGRES_USER)
+    password = quote_plus(POSTGRES_PASSWORD)
     return (
-        f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
+        f"postgresql+asyncpg://{user}:{password}"
         f"@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
     )
 
 def get_postgres_dsn_sync() -> str:
     """Return a synchronous DSN for Alembic migrations."""
+    user = quote_plus(POSTGRES_USER)
+    password = quote_plus(POSTGRES_PASSWORD)
     return (
-        f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
+        f"postgresql+psycopg2://{user}:{password}"
         f"@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
     )
 
@@ -78,7 +83,8 @@ REDIS_DB       = int(os.environ.get("REDIS_DB", "0"))
 
 def get_redis_url() -> str:
     """Return a redis:// URL for use with redis-py or aioredis."""
-    return f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+    password = quote_plus(REDIS_PASSWORD)
+    return f"redis://:{password}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 
 # ── Obsidian / Write-back ─────────────────────────────────────────────────────
 

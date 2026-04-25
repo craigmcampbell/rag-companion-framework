@@ -25,15 +25,15 @@ jobs:
           .venv/bin/pip install -r requirements.txt
           .venv/bin/pip install basedpyright pyyaml
 
-      - name: Typecheck middleware
+      - name: Typecheck ai-companion
         run: |
           # basedpyright defaults to failOnWarnings=true; pyrightconfig.json sets failOnWarnings false
           # so CI passes on errors-only. --level error keeps the log short (see DetachHead/basedpyright#1481).
-          .venv/bin/python -m basedpyright --level error services/middleware
+          .venv/bin/python -m basedpyright --level error ai-companion
 
       - name: Run tier 1 validation
         run: |
-          .venv/bin/python services/middleware/validate.py --tier 1
+          .venv/bin/python ai-companion/validate.py --tier 1
 
       - name: Validate Taskfile YAML parses
         run: |
