@@ -32,7 +32,7 @@ from components.memory_extractor import (
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
 FIXTURE_DIR = Path(__file__).parent.parent / "fixtures" / "exchanges"
-CAMPAIGN_DIR = Path(__file__).parent.parent / "campaigns"
+CAMPAIGN_DIR = Path(__file__).parent.parent.parent / "rpg-companion" / "backend" / "campaigns"
 
 
 def load_exchange(filename: str) -> Exchange:

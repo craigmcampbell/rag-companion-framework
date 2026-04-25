@@ -1,10 +1,14 @@
-# Local dev / IDE resolution — matches services/middleware and services/watcher dependencies
+# Local dev / IDE resolution — matches ai-companion and services/watcher dependencies
+asyncpg
 chromadb
 fastapi
 httpx
+psycopg2-binary
 pydantic
 python-dotenv
 pyyaml
+redis
 sentence-transformers
+sqlalchemy[asyncio]
 uvicorn[standard]
 watchdog

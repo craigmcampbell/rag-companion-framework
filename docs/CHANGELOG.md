@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-04-25
+
+### Added
+
+- Docker Compose now provisions local Postgres and Redis services with persistent volumes and health checks
+- `ai-companion` config now includes Postgres/Redis connection settings and helper DSN/URL builders
+
+### Changed
+
+- Middleware codebase moved from `services/middleware` to `ai-companion` with task and dependency paths updated
+- Campaign YAML files moved to `rpg-companion/backend/campaigns`, and memory extractor tests now load from the new location
+- Compose middleware and SillyTavern services are temporarily disabled while shared infra remains runnable
+- Pyright include paths expanded to cover `ai-companion`, `rpg-companion`, and `services`
+
 ## 2026-04-06
 
 ### Changed
