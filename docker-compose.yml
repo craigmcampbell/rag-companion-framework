@@ -1,4 +1,5 @@
 services:
+
   # ── Shared infrastructure ──────────────────────────────────────────────────
 
   chromadb:
@@ -7,11 +8,44 @@ services:
     volumes:
       - chroma_data:/chroma/chroma
     ports:
-      - "127.0.0.1:8100:8000" # 81XX convention; internal is always 8000
+      - "127.0.0.1:8100:8000"
 
-  # ── Vault watcher ──────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Vault watcher — profile: infra ────────────────────────────────────────
+  # Start with: docker compose --profile infra up watcher
 
   watcher:
+    profiles: [ "infra" ]
     build: ./services/watcher
     restart: unless-stopped
     environment:
@@ -26,10 +60,12 @@ services:
       - ${STARFORGED_VAULT_PATH}:/vaults/starforged:ro
       - model_cache:/root/.cache/huggingface
 
-  # ── Middleware ─────────────────────────────────────────────────────────────
+  # ── Middleware — profile: app ──────────────────────────────────────────────
+  # Not ready until Component 11. Start with: docker compose --profile app up
 
   middleware:
-    build: ./services/middleware
+    profiles: [ "app" ]
+    build: ./ai-companion
     restart: unless-stopped
     ports:
       - "127.0.0.1:8200:8200"
@@ -39,18 +75,33 @@ services:
       - EMBEDDING_MODEL=all-mpnet-base-v2
       - OLLAMA_HOST=${OLLAMA_HOST:-host.docker.internal}
       - OLLAMA_PORT=11434
-      - OLLAMA_MODEL=mistral-nemo:12b
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - OPENROUTER_MODEL=deepseek/deepseek-chat
       - MIDDLEWARE_PORT=8200
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     depends_on:
-      - chromadb
+      chromadb:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     extra_hosts:
-      - "host.docker.internal:host-gateway" # lets middleware reach Ollama on host
+      - "host.docker.internal:host-gateway"
 
-  # ── SillyTavern — Senna campaign ──────────────────────────────────────────
+  # ── SillyTavern — profile: app ────────────────────────────────────────────
+  # Not ready until middleware is complete.
 
   sillytavern-senna:
+    profiles: [ "app" ]
     image: ghcr.io/sillytavern/sillytavern:latest
     container_name: sillytavern-senna
     restart: unless-stopped
@@ -63,7 +114,7 @@ services:
       - ./sillytavern/senna/config:/home/node/app/config
       - ./sillytavern/senna/data:/home/node/app/data
     healthcheck:
-      test: ["CMD", "node", "src/healthcheck.js"]
+      test: [ "CMD", "node", "src/healthcheck.js" ]
       interval: 30s
       timeout: 10s
       start_period: 20s
@@ -71,9 +122,8 @@ services:
     depends_on:
       - middleware
 
-  # ── SillyTavern — Starforged campaign ─────────────────────────────────────
-
   sillytavern-starforged:
+    profiles: [ "app" ]
     image: ghcr.io/sillytavern/sillytavern:latest
     container_name: sillytavern-starforged
     restart: unless-stopped
@@ -86,7 +136,7 @@ services:
       - ./sillytavern/starforged/config:/home/node/app/config
       - ./sillytavern/starforged/data:/home/node/app/data
     healthcheck:
-      test: ["CMD", "node", "src/healthcheck.js"]
+      test: [ "CMD", "node", "src/healthcheck.js" ]
       interval: 30s
       timeout: 10s
       start_period: 20s
@@ -96,4 +146,6 @@ services:
 
 volumes:
   chroma_data:
+  postgres_data:
+  redis_data:
   model_cache:

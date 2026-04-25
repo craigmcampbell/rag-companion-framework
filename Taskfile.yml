@@ -4,21 +4,39 @@ version: '3'
 
 tasks:
   test:
-    desc: Run middleware validation (tier 2 — requires Ollama)
+    desc: Run validation (tier 2 — requires Ollama)
     cmds:
-      - python3 ./services/middleware/validate.py --tier 2
+      - python3 ./ai-companion/validate.py --tier 2
     silent: false
 
   test:1:
     desc: Run tier 1 only (pure logic, no connections)
     cmds:
-      - python3 ./services/middleware/validate.py --tier 1
+      - python3 ./ai-companion/validate.py --tier 1
     silent: false
 
   test:3:
     desc: Run full stack validation (tier 3 — requires all connections)
     cmds:
-      - python3 ./services/middleware/validate.py --tier 3
+      - python3 ./ai-companion/validate.py --tier 3
+    silent: false
+
+  infra:up:
+    desc: Start core infrastructure (chromadb, postgres, redis)
+    cmds:
+      - docker compose up chromadb postgres redis -d
+    silent: false
+
+  infra:down:
+    desc: Stop all infrastructure
+    cmds:
+      - docker compose down
+    silent: false
+
+  infra:logs:
+    desc: Tail infrastructure logs
+    cmds:
+      - docker compose logs -f chromadb postgres redis
     silent: false
 
   ingest:
@@ -29,7 +47,7 @@ tasks:
     silent: false
 
   install:
-    desc: Install the dependencies
+    desc: Install Python dependencies
     cmds:
       - pip3 install -r requirements.txt
     silent: false
